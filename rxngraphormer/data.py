@@ -37,7 +37,8 @@ ATOM_LST = ['C', 'N', 'O', 'S', 'F', 'Si', 'P', 'Cl', 'Br', 'Mg', 'Na', 'Ca', 'F
              'Ce', 'Gd', 'Ga', 'Cs', '*', 'unk']
 ATOM_DICT = {symbol: i for i, symbol in enumerate(ATOM_LST)}
 MAX_NEIGHBORS = 10
-CHIRAL_TAG_LST = [Chem.rdchem.ChiralType.CHI_TETRAHEDRAL_CW,Chem.rdchem.ChiralType.CHI_TETRAHEDRAL_CCW,
+CHIRAL_TAG_LST = [Chem.rdchem.ChiralType.CHI_TETRAHEDRAL_CW,
+                  Chem.rdchem.ChiralType.CHI_TETRAHEDRAL_CCW,
                   Chem.rdchem.ChiralType.CHI_UNSPECIFIED]
 CHIRAL_TAG_DICT = {ct: i for i, ct in enumerate(CHIRAL_TAG_LST)}
 HYBRIDTYPE_LST = [Chem.rdchem.HybridizationType.SP,Chem.rdchem.HybridizationType.SP2,Chem.rdchem.HybridizationType.SP3,
