@@ -178,6 +178,6 @@ save/*
 model_path/*/
 
 # data files
-dataset/*/
-dataset/*.csv
-notebook/*.png
+# dataset/*/
+# dataset/*.csv
+# notebook/*.png
