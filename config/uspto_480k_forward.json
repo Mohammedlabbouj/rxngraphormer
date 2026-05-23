@@ -8,7 +8,7 @@
     "valid_tgt_file": "tgt-val.txt",
     "test_src_file": "src-test.txt",
     "test_tgt_file": "tgt-test.txt",
-    "batch_size": 64
+    "batch_size": 16
   },
   "model": {
     "save_dir": "./save",
@@ -40,20 +40,20 @@
     "beta1": 0.9,
     "beta2": 0.998,
     "eps": 1e-09,
-    "learning_rate": 2e-4,
+    "learning_rate": 2e-2,
     "weight_decay": 0.0
   },
   "scheduler": {
-    "warmup_step":3000,
+    "warmup_step":2000,
     "type": "noamlr"
   },
   "training": {
     "epoch": 100,
-    "clip_norm": 20.0,
-    "accum": 5
+    "clip_norm": 5.0,
+    "accum": 8
   },
   "infer": {
-    "beam_size": 10,
+    "beam_size": 20,
     "min_length": 1,
     "max_length": 512,
     "print_iterval": 10000

@@ -175,8 +175,9 @@ tmp/
 save/*
 
 # Model files
-model_path/*/
-
+# model_path/*/
+dataset/USPTO_50k/
+model_path/USPTO_50k/
 # data files
 # dataset/*/
 # dataset/*.csv
