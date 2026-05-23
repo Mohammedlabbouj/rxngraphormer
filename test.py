@@ -1,4 +1,4 @@
-from rxngraphormer.rxngraphormer.eval import reaction_prediction
+from rxngraphormer.eval import reaction_prediction
 
 # retro-synthesis planning
 uspto_50k_model_path = "./model_path/USPTO_50k"
