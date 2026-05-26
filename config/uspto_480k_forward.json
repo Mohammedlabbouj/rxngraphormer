@@ -40,7 +40,7 @@
     "beta1": 0.9,
     "beta2": 0.998,
     "eps": 1e-09,
-    "learning_rate": 2e-2,
+    "learning_rate": 1e-3,
     "weight_decay": 0.0
   },
   "scheduler": {
@@ -49,18 +49,22 @@
   },
   "training": {
     "epoch": 100,
-    "clip_norm": 5.0,
-    "accum": 8
+    "clip_norm": 3.0,
+    "accum": 8,
+    "early_stop_metric": "valid_loss",
+    "early_stop_patience": 10,
+    "early_stop_min_delta": 0.0,
+    "early_stop_warmup": 0
   },
   "infer": {
-    "beam_size": 20,
+    "beam_size": 10,
     "min_length": 1,
     "max_length": 512,
     "print_iterval": 10000
   },
   "others": {
     "device": "cuda:0",
-    "enable_amp": false,
+    "enable_amp": true,
     "log_step": 100,
     "multi_gpu": false,
     "local_rank": -1,

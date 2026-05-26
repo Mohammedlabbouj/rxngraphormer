@@ -944,12 +944,71 @@ class SequenceTrainer():
         self.best_val_acc = 0
         self.best_seq_acc = 0
         self.best_token_acc = 0
+        self.early_stop_patience = int(getattr(self.config.training, "early_stop_patience", 0) or 0)
+        self.early_stop_min_delta = float(getattr(self.config.training, "early_stop_min_delta", 0.0) or 0.0)
+        self.early_stop_metric = getattr(self.config.training, "early_stop_metric", "valid_seq_acc").lower()
+        self.early_stop_warmup = int(getattr(self.config.training, "early_stop_warmup", 0) or 0)
+        self.early_stop_wait = 0
+        self.early_stop_mode = "min" if self.early_stop_metric == "valid_loss" else "max"
+        self.early_stop_best = float("inf") if self.early_stop_mode == "min" else -float("inf")
+        valid_early_stop_metrics = {"valid_loss", "valid_acc", "valid_token_acc", "valid_seq_acc"}
+        if self.early_stop_metric not in valid_early_stop_metrics:
+            raise ValueError(f"early_stop_metric must be one of {sorted(valid_early_stop_metrics)}")
+        if self.early_stop_patience > 0 and (not self.multi_gpu or dist.get_rank() == 0):
+            logging.info(
+                f"[INFO] Early stopping enabled: metric={self.early_stop_metric}, "
+                f"patience={self.early_stop_patience}, min_delta={self.early_stop_min_delta}, "
+                f"warmup={self.early_stop_warmup}"
+            )
         if self.multi_gpu and dist.get_rank() == 0:
             logging.info("[INFO] Model initialized")
             sys.stdout.flush()
         elif not self.multi_gpu:
             logging.info("[INFO] Model initialized")
             sys.stdout.flush()
+
+    def _is_main_process(self):
+        return (not self.multi_gpu) or dist.get_rank() == 0
+
+    def _early_stop_improved(self, current_score):
+        if self.early_stop_mode == "min":
+            return current_score < self.early_stop_best - self.early_stop_min_delta
+        return current_score > self.early_stop_best + self.early_stop_min_delta
+
+    def _update_early_stopping(self, metrics):
+        if self.early_stop_patience <= 0:
+            return False
+
+        current_score = metrics[self.early_stop_metric]
+        if self._early_stop_improved(current_score):
+            self.early_stop_best = current_score
+            self.early_stop_wait = 0
+            if self._is_main_process():
+                logging.info(
+                    f"[INFO] Early stopping metric improved: {self.early_stop_metric}="
+                    f"{current_score:.8f}"
+                )
+            return False
+
+        if self.epoch <= self.early_stop_warmup:
+            return False
+
+        self.early_stop_wait += 1
+        if self._is_main_process():
+            logging.info(
+                f"[INFO] Early stopping: no improvement in {self.early_stop_metric} "
+                f"for {self.early_stop_wait}/{self.early_stop_patience} epoch(s). "
+                f"Best={self.early_stop_best:.8f}, current={current_score:.8f}"
+            )
+        return self.early_stop_wait >= self.early_stop_patience
+
+    def _sync_early_stop(self, stop_training):
+        if not self.multi_gpu:
+            return stop_training
+
+        stop_tensor = torch.tensor(int(stop_training), device=self.local_rank)
+        dist.broadcast(stop_tensor, src=0)
+        return bool(stop_tensor.item())
     
     def train(self):
         self.model.train()
@@ -1234,12 +1293,31 @@ class SequenceTrainer():
                 logging.info(f'Epoch {self.epoch} took {epoch_end_time - epoch_start_time:.2f} seconds\n')
             elif not self.multi_gpu:
                 logging.info(f'Epoch {self.epoch} took {epoch_end_time - epoch_start_time:.2f} seconds\n')
+            early_stop_metrics = {
+                "valid_loss": valid_loss,
+                "valid_acc": valid_acc,
+                "valid_token_acc": valid_token_acc_wo_teach,
+                "valid_seq_acc": valid_seq_acc_wo_teach
+            }
+            stop_training = False
+            if self._is_main_process():
+                stop_training = self._update_early_stopping(early_stop_metrics)
+            stop_training = self._sync_early_stop(stop_training)
+            if stop_training:
+                if self._is_main_process():
+                    logging.info(
+                        f"[INFO] Early stopping triggered at epoch {self.epoch}. "
+                        f"Best {self.early_stop_metric}: {self.early_stop_best:.8f}"
+                    )
+                break
 
         if self.multi_gpu and dist.get_rank() == 0:
-            #logging.info(f'Best validation acc. so far: {self.best_val_acc}')
+            logging.info(f'Best validation acc. so far: {self.best_val_acc}')
+            logging.info(f'Best sequence acc. without teacher so far: {self.best_seq_acc}')
             self.writer.close()
         elif not self.multi_gpu:
-            #logging.info(f'Best validation acc. so far: {self.best_val_acc}')
+            logging.info(f'Best validation acc. so far: {self.best_val_acc}')
+            logging.info(f'Best sequence acc. without teacher so far: {self.best_seq_acc}')
             self.writer.close()
             
     def init_optimizer(self):
