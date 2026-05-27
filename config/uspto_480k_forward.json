@@ -33,18 +33,18 @@
     "att_encoder_type": "attxl",
     "pretrained_model_path": "./model_path/pretrained_classification_model",
     "pretrained_model_freeze": false,
-    "pretrained_lr_scaled_coef": 0.3
+    "pretrained_lr_scaled_coef": 0.5
   },
   "optimizer": {
     "optimizer": "Adam",
     "beta1": 0.9,
     "beta2": 0.998,
     "eps": 1e-09,
-    "learning_rate": 1e-3,
+    "learning_rate": 2e-2,
     "weight_decay": 0.0
   },
   "scheduler": {
-    "warmup_step":2000,
+    "warmup_step":500,
     "type": "noamlr"
   },
   "training": {
