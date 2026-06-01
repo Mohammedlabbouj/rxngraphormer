@@ -16,6 +16,27 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from rdkit import Chem
 
+try:
+    import torch_xla.core.xla_model as xm
+except ImportError:
+    xm = None
+
+
+def _wants_tpu(device):
+    return str(device).lower() in {"tpu", "xla", "xla:0"}
+
+
+def _resolve_device(config):
+    configured_device = getattr(config.others, "device", "cuda:0")
+    if _wants_tpu(configured_device):
+        if xm is None:
+            raise ImportError(
+                "TPU training requires torch_xla. Install the torch_xla build that "
+                "matches your PyTorch/XLA runtime, then set others.device to 'xla'."
+            )
+        return xm.xla_device(), True
+    return configured_device if torch.cuda.is_available() else "cpu", False
+
 
 class SPLITClassifierTrainer():
     def __init__(self,config):
@@ -774,7 +795,11 @@ class SequenceTrainer():
         self.config = config
         assert self.config.model.task in ["forward_prediction","retrosynthesis"], "Task must be forward_prediction or retrosynthesis"
         self.multi_gpu = self.config.others.multi_gpu
-        self.device = self.config.others.device if torch.cuda.is_available() else 'cpu'
+        self.device, self.use_tpu = _resolve_device(self.config)
+        if self.use_tpu and self.multi_gpu:
+            raise NotImplementedError("TPU support currently uses a single XLA device; set others.multi_gpu to false.")
+        if self.use_tpu and getattr(self.config.others, "enable_amp", False):
+            self.config.others.enable_amp = False
         self.vocab = load_vocab(f'{self.config.data.data_path}/{self.config.data.vocab_file}')
         self.vocab_rev = [k for k, v in sorted(self.vocab.items(), key=lambda tup: tup[1])]
         self.save_dir = f"{self.config.model.save_dir}/seq-v2-{self.config.data.data_path.split('/')[-1]}-{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -783,6 +808,10 @@ class SequenceTrainer():
         self.save_improve = self.config.others.save_improve
         if hasattr(self.config.model,"pretrained_model_path") and self.config.model.pretrained_model_path:
             self.save_dir += "_ft"
+        self.checkpoint_path = getattr(self.config.training, "checkpoint_path", "")
+        self.resume_training = bool(getattr(self.config.training, "resume_training", False))
+        if self.checkpoint_path:
+            self.save_dir += "_ckpt"
         if self.multi_gpu:
             self.local_rank = self.config.others.local_rank
             torch.cuda.set_device(self.local_rank)
@@ -800,7 +829,8 @@ class SequenceTrainer():
             self.device_num = 1
             logging.info(self.config)
             logging.info(f"[INFO] Training results will be saved to {self.save_dir}")
-            logging.info(f'[INFO] Using {self.device_num} GPU')
+            device_name = "TPU/XLA" if self.use_tpu else ("GPU" if torch.cuda.is_available() else "CPU")
+            logging.info(f'[INFO] Using {self.device_num} {device_name}')
             sys.stdout.flush()
 
         self.log_dir = f"{self.save_dir}/log"
@@ -909,6 +939,8 @@ class SequenceTrainer():
 
         self.init_optimizer()
         self.init_scheduler()
+        self.start_epoch = 1
+        self._load_training_checkpoint()
 
         if self.multi_gpu and dist.get_rank() == 0:
             logging.info(f'[INFO] Load dataset {self.config.data.data_path}...')
@@ -937,13 +969,13 @@ class SequenceTrainer():
         self.accum = 0
         self.losses, self.accs = [], []
         
-        self.scaler = torch.cuda.amp.GradScaler(enabled=self.config.others.enable_amp)
+        self.scaler = torch.cuda.amp.GradScaler(enabled=self.config.others.enable_amp and not self.use_tpu)
         
         self.start_time = time.time()
         #self.best_val_loss = float('inf')
-        self.best_val_acc = 0
-        self.best_seq_acc = 0
-        self.best_token_acc = 0
+        self.best_val_acc = getattr(self, "best_val_acc", 0)
+        self.best_seq_acc = getattr(self, "best_seq_acc", 0)
+        self.best_token_acc = getattr(self, "best_token_acc", 0)
         self.early_stop_patience = int(getattr(self.config.training, "early_stop_patience", 0) or 0)
         self.early_stop_min_delta = float(getattr(self.config.training, "early_stop_min_delta", 0.0) or 0.0)
         self.early_stop_metric = getattr(self.config.training, "early_stop_metric", "valid_seq_acc").lower()
@@ -969,6 +1001,42 @@ class SequenceTrainer():
 
     def _is_main_process(self):
         return (not self.multi_gpu) or dist.get_rank() == 0
+
+    def _save_checkpoint(self, checkpoint, path):
+        if self.use_tpu:
+            xm.save(checkpoint, path)
+        else:
+            torch.save(checkpoint, path)
+
+    def _load_training_checkpoint(self):
+        if not self.checkpoint_path:
+            return
+
+        ckpt_file = os.path.abspath(os.path.expanduser(self.checkpoint_path))
+        if not os.path.exists(ckpt_file):
+            raise FileNotFoundError(f"Checkpoint file does not exist: {ckpt_file}")
+
+        if self._is_main_process():
+            mode = "full training state" if self.resume_training else "model weights only"
+            logging.info(f"[INFO] Loading {mode} from checkpoint: {ckpt_file}")
+
+        ckpt_inf = torch.load(ckpt_file, map_location="cpu")
+        model_state_dict = update_dict_key(ckpt_inf["model_state_dict"])
+        model_to_load = self.model.module if self.multi_gpu else self.model
+        model_to_load.load_state_dict(model_state_dict)
+
+        self.best_val_acc = ckpt_inf.get("best_val_acc", 0)
+        self.best_seq_acc = ckpt_inf.get("best_seq_acc", 0)
+        self.best_token_acc = ckpt_inf.get("best_token_acc", 0)
+
+        if self.resume_training:
+            if "optimizer_state_dict" not in ckpt_inf or "scheduler_state_dict" not in ckpt_inf:
+                raise KeyError("resume_training requires optimizer_state_dict and scheduler_state_dict in the checkpoint.")
+            self.optimizer.load_state_dict(ckpt_inf["optimizer_state_dict"])
+            self.scheduler.load_state_dict(ckpt_inf["scheduler_state_dict"])
+            self.start_epoch = int(ckpt_inf.get("epoch", 0)) + 1
+            if self._is_main_process():
+                logging.info(f"[INFO] Resuming at epoch {self.start_epoch}")
 
     def _early_stop_improved(self, current_score):
         if self.early_stop_mode == "min":
@@ -1015,6 +1083,7 @@ class SequenceTrainer():
         self.model.zero_grad()
         losses = []
         accs = []
+        g_norm = 0.0
         if self.multi_gpu:
             self.train_dataloader.sampler.set_epoch(self.epoch)
         for step, batch in enumerate(self.train_dataloader):
@@ -1027,25 +1096,33 @@ class SequenceTrainer():
                 batch.to(self.local_rank)
             with torch.autograd.profiler.profile(enabled=False,
                                                 record_shapes=False,
-                                                use_cuda=torch.cuda.is_available()) as prof:
-                with torch.cuda.amp.autocast(enabled=self.config.others.enable_amp):
+                                                use_cuda=torch.cuda.is_available() and not self.use_tpu) as prof:
+                with torch.cuda.amp.autocast(enabled=self.config.others.enable_amp and not self.use_tpu):
                     loss, acc = self.model(batch)
-                self.scaler.scale(loss).backward()
+                if self.use_tpu:
+                    loss.backward()
+                else:
+                    self.scaler.scale(loss).backward()
                 losses.append(loss.item())
                 accs.append(acc.item() * 100)
                 self.accum += 1
                 if self.accum == self.config.training.accum:
-                    # Unscales the gradients of optimizer's assigned params in-place
-                    self.scaler.unscale_(self.optimizer)
+                    if not self.use_tpu:
+                        # Unscales the gradients of optimizer's assigned params in-place
+                        self.scaler.unscale_(self.optimizer)
 
                     # Since the gradients of optimizer's assigned params are unscaled, clips as usual:
                     nn.utils.clip_grad_norm_(self.model.parameters(), self.config.training.clip_norm)
 
-                    # optimizer's gradients are already unscaled, so scaler.step does not unscale them,
-                    self.scaler.step(self.optimizer)
+                    if self.use_tpu:
+                        xm.optimizer_step(self.optimizer)
+                        xm.mark_step()
+                    else:
+                        # optimizer's gradients are already unscaled, so scaler.step does not unscale them,
+                        self.scaler.step(self.optimizer)
 
-                    # Updates the scale for next iteration.
-                    self.scaler.update()
+                        # Updates the scale for next iteration.
+                        self.scaler.update()
 
                     self.scheduler.step()
 
@@ -1060,14 +1137,20 @@ class SequenceTrainer():
                     logging.info(f"Epoch {self.epoch}: step {step}, loss: {np.mean(losses)}, acc: {np.mean(accs)}, p_norm: {param_norm(self.model)}, g_norm: {g_norm}, lr: {get_lr(self.optimizer)}, time duration: {time.time() - self.start_time: .2f} s")
                     sys.stdout.flush()
         
-        if self.accum != self.config.training.accum:
+        if self.accum > 0:
 
-            self.scaler.unscale_(self.optimizer)
+            if not self.use_tpu:
+                self.scaler.unscale_(self.optimizer)
             nn.utils.clip_grad_norm_(self.model.parameters(), self.config.training.clip_norm)
-            self.scaler.step(self.optimizer)
-            self.scaler.update()
+            if self.use_tpu:
+                xm.optimizer_step(self.optimizer)
+                xm.mark_step()
+            else:
+                self.scaler.step(self.optimizer)
+                self.scaler.update()
             self.scheduler.step()
             self.model.zero_grad()
+            self.accum = 0
         if self.multi_gpu and dist.get_rank() == 0:
             logging.info(f"Epoch {self.epoch} / {self.config.training.epoch}, loss: {np.mean(losses)}, acc: {np.mean(accs)}, "
                         f"p_norm: {param_norm(self.model)}, g_norm: {g_norm}, "
@@ -1183,9 +1266,10 @@ class SequenceTrainer():
     def run(self):
         logging.info("[INFO] Start training...")
         sys.stdout.flush()
-        for epoch in range(self.config.training.epoch):
+        end_epoch = self.start_epoch + self.config.training.epoch
+        for epoch in range(self.start_epoch, end_epoch):
             epoch_start_time = time.time()
-            self.epoch = epoch + 1
+            self.epoch = epoch
             if self.multi_gpu and dist.get_rank() == 0:
                 logging.info(f'============= Epoch {self.epoch} =============')
                 logging.info("Training....")
@@ -1229,9 +1313,9 @@ class SequenceTrainer():
                                     'best_val_acc': self.best_val_acc
                                             }
                     if not self.save_improve:
-                        torch.save(checkpoint, os.path.join(self.model_save_dir, f'valid_acc_checkpoint.pt'))
+                        self._save_checkpoint(checkpoint, os.path.join(self.model_save_dir, f'valid_acc_checkpoint.pt'))
                     else:
-                        torch.save(checkpoint, os.path.join(self.model_save_dir, f'valid_acc_checkpoint_{self.epoch}.pt'))
+                        self._save_checkpoint(checkpoint, os.path.join(self.model_save_dir, f'valid_acc_checkpoint_{self.epoch}.pt'))
             
             
             if valid_seq_acc_wo_teach > self.best_seq_acc:
@@ -1264,9 +1348,9 @@ class SequenceTrainer():
                                     'best_token_acc': self.best_token_acc
                                             }
                     if not self.save_improve:
-                        torch.save(checkpoint, os.path.join(self.model_save_dir, f'valid_checkpoint.pt'))
+                        self._save_checkpoint(checkpoint, os.path.join(self.model_save_dir, f'valid_checkpoint.pt'))
                     else:
-                        torch.save(checkpoint, os.path.join(self.model_save_dir, f'valid_checkpoint_{self.epoch}.pt'))
+                        self._save_checkpoint(checkpoint, os.path.join(self.model_save_dir, f'valid_checkpoint_{self.epoch}.pt'))
                 #if self.epoch >= self.test_eval_after:
                     #if self.multi_gpu and dist.get_rank() == 0:
                     #    logging.info("[INFO] Testing....")

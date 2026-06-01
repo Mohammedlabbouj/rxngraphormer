@@ -54,7 +54,9 @@
     "early_stop_metric": "valid_loss",
     "early_stop_patience": 10,
     "early_stop_min_delta": 0.0,
-    "early_stop_warmup": 0
+    "early_stop_warmup": 0,
+    "checkpoint_path": "",
+    "resume_training": false
   },
   "infer": {
     "beam_size": 10,
