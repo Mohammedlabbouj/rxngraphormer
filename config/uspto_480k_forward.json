@@ -44,7 +44,7 @@
     "weight_decay": 0.0
   },
   "scheduler": {
-    "warmup_step": 20000,
+    "warmup_step": 2500,
     "type": "noamlr"
   },
   "training": {
