@@ -19,8 +19,8 @@
     "gnum_layer": 4,
     "JK": "last",
     "gnn_type": "gcn",
-    "drop_ratio": 0.3,
-    "attn_drop_ratio": 0.3,
+    "drop_ratio": 0.2,
+    "attn_drop_ratio": 0.2,
     "tnum_layer": 6,
     "num_heads": 8,
     "encoder_filter_size": 2048,
@@ -33,7 +33,7 @@
     "att_encoder_type": "attxl",
     "pretrained_model_path": "./model_path/pretrained_classification_model",
     "pretrained_model_freeze": false,
-    "pretrained_lr_scaled_coef": 0.2
+    "pretrained_lr_scaled_coef": 0.1
   },
   "optimizer": {
     "optimizer": "AdamW",
@@ -44,13 +44,13 @@
     "weight_decay": 0.0
   },
   "scheduler": {
-    "warmup_step":2500,
+    "warmup_step": 20000,
     "type": "noamlr"
   },
   "training": {
-    "epoch": 200,
-    "clip_norm": 3.0,
-    "accum": 8,
+    "epoch": 500,
+    "clip_norm": 20.0,
+    "accum": 24,
     "early_stop_metric": "valid_loss",
     "early_stop_patience": 10,
     "early_stop_min_delta": 0.0,
