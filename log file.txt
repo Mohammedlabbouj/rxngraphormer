@@ -1,0 +1,7 @@
+============= Epoch 5 =============
+Training....
+
+Evaluation (with teacher) at epoch 5, eval loss: 3.639095566165981, eval acc: 28.945944672708574
+Inferencing....
+Evaluation (without teacher) at epoch 5, eval acc (sequence): 0.0
+

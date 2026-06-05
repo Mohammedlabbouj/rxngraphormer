@@ -182,6 +182,7 @@ model_path/USPTO_50k/
 dataset/USPTO_480k_@
 dataset/USPTO_480k
 dataset/USPTO_31k
+model_path/USPTO_480k
 logs.txt
 # data files
 # dataset/*/
