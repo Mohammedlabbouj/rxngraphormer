@@ -30,6 +30,12 @@ def main():
         help="Override the output root directory. Defaults to the config value.",
     )
     parser.add_argument(
+        "--data_path",
+        type=str,
+        default="",
+        help="Override the dataset root, e.g. a cleaned USPTO_31k_UNMATCHED folder.",
+    )
+    parser.add_argument(
         "--checkpoint_path",
         type=str,
         default="",
@@ -83,6 +89,8 @@ def main():
 
     if args.save_dir:
         config_dict["model"]["save_dir"] = args.save_dir
+    if args.data_path:
+        config_dict["data"]["data_path"] = args.data_path
     if args.checkpoint_path:
         config_dict["training"]["checkpoint_path"] = args.checkpoint_path
         config_dict["training"]["resume_training"] = args.resume_training
