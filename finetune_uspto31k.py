@@ -2,6 +2,9 @@ from box import Box
 import argparse
 import os
 import json
+import re
+import shutil
+from pathlib import Path
 
 from rxngraphormer.train import SequenceTrainer
 
@@ -40,6 +43,37 @@ def main():
     parser.add_argument("--local_rank", type=int, default=-1)
     args = parser.parse_args()
 
+    smiles_pattern = re.compile(
+        r"(\[[^\]]+]|Br?|Cl?|Se?|N|O|S|P|F|I|b|c|n|o|s|p|\(|\)|\.|=|#|-|\+|\\\\|\/|:|~|@|\?|>|\*|\$|\%[0-9]{2}|[0-9])"
+    )
+
+    def tokenize_smiles_line(line: str) -> str:
+        line = line.strip()
+        if not line:
+            return line
+        tokens = smiles_pattern.findall(line)
+        if "".join(tokens) != line:
+            return line
+        return " ".join(tokens)
+
+    def prepare_tokenized_dataset(src_root: str) -> str:
+        src_root_path = Path(src_root)
+        tokenized_root = Path("/kaggle/working") / f"{src_root_path.name}_tokenized"
+        if tokenized_root.exists():
+            shutil.rmtree(tokenized_root)
+        tokenized_root.mkdir(parents=True, exist_ok=True)
+
+        for filename in ["vocab_smiles.txt", "src-train.txt", "tgt-train.txt", "src-val.txt", "tgt-val.txt", "src-test.txt", "tgt-test.txt"]:
+            source_file = src_root_path / filename
+            target_file = tokenized_root / filename
+            if filename == "vocab_smiles.txt":
+                shutil.copyfile(source_file, target_file)
+                continue
+            with open(source_file, "r") as fr, open(target_file, "w") as fw:
+                for line in fr:
+                    fw.write(tokenize_smiles_line(line) + "\n")
+        return str(tokenized_root)
+
     with open(args.config_json, "r") as fr:
         config_dict = json.load(fr)
 
@@ -54,19 +88,16 @@ def main():
         config_dict["training"]["resume_training"] = args.resume_training
         config_dict["model"]["pretrained_model_path"] = ""
     elif args.pretrained_model_path:
-        params_json = os.path.join(args.pretrained_model_path, "parameters.json")
         ckpt_file = os.path.join(args.pretrained_model_path, "model", "valid_checkpoint.pt")
-        if os.path.isfile(params_json):
-            with open(params_json, "r") as fr:
-                pretrained_params = json.load(fr)
-            if pretrained_params.get("task") == "sequence_generation":
-                config_dict["training"]["checkpoint_path"] = ckpt_file
-                config_dict["training"]["resume_training"] = args.resume_training
-                config_dict["model"]["pretrained_model_path"] = ""
-            else:
-                config_dict["model"]["pretrained_model_path"] = args.pretrained_model_path
+        if os.path.isfile(ckpt_file):
+            config_dict["training"]["checkpoint_path"] = ckpt_file
+            config_dict["training"]["resume_training"] = args.resume_training
+            config_dict["model"]["pretrained_model_path"] = ""
         else:
             config_dict["model"]["pretrained_model_path"] = args.pretrained_model_path
+
+    if "data" in config_dict and "data_path" in config_dict["data"]:
+        config_dict["data"]["data_path"] = prepare_tokenized_dataset(config_dict["data"]["data_path"])
 
     config = Box(config_dict)
     config.others.local_rank = args.local_rank
