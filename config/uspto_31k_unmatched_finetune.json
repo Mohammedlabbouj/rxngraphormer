@@ -1,0 +1,76 @@
+{
+  "data": {
+    "data_path": "./dataset/USPTO_31k_UNMATCHED",
+    "vocab_file": "vocab_smiles.txt",
+    "train_src_file": "src-train.txt",
+    "train_tgt_file": "tgt-train.txt",
+    "valid_src_file": "src-val.txt",
+    "valid_tgt_file": "tgt-val.txt",
+    "test_src_file": "src-test.txt",
+    "test_tgt_file": "tgt-test.txt",
+    "batch_size": 16
+  },
+  "model": {
+    "save_dir": "./save",
+    "bond_feat_red": "mean",
+    "gnn_aggr": "add",
+    "node_readout": "sum",
+    "emb_dim": 256,
+    "gnum_layer": 4,
+    "JK": "last",
+    "gnn_type": "gcn",
+    "drop_ratio": 0.2,
+    "attn_drop_ratio": 0.2,
+    "tnum_layer": 6,
+    "num_heads": 8,
+    "encoder_filter_size": 2048,
+    "rel_pos_buckets": 11,
+    "filter_size": 2048,
+    "max_rel_pos": 4,
+    "task": "forward_prediction",
+    "decoder_num_layers": 6,
+    "add_empty_node": false,
+    "att_encoder_type": "attxl",
+    "pretrained_model_path": "./model_path/USPTO_480k",
+    "pretrained_model_freeze": false,
+    "pretrained_lr_scaled_coef": 0.1
+  },
+  "optimizer": {
+    "optimizer": "AdamW",
+    "beta1": 0.9,
+    "beta2": 0.998,
+    "eps": 1e-9,
+    "learning_rate": 2.0,
+    "weight_decay": 0.0
+  },
+  "scheduler": {
+    "warmup_step": 1500,
+    "type": "noamlr"
+  },
+  "training": {
+    "epoch": 100,
+    "clip_norm": 20.0,
+    "accum": 4,
+    "early_stop_metric": "valid_seq_acc",
+    "early_stop_patience": 10,
+    "early_stop_min_delta": 0.0,
+    "early_stop_warmup": 5,
+    "checkpoint_path": "",
+    "resume_training": false
+  },
+  "infer": {
+    "beam_size": 5,
+    "min_length": 1,
+    "max_length": 512,
+    "print_iterval": 10000
+  },
+  "others": {
+    "device": "cuda:0",
+    "enable_amp": true,
+    "log_step": 100,
+    "multi_gpu": false,
+    "local_rank": -1,
+    "save_improve": false
+  },
+  "task": "sequence_generation"
+}
