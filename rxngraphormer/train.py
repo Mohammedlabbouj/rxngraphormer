@@ -810,6 +810,8 @@ class SequenceTrainer():
             self.save_dir += "_ft"
         self.checkpoint_path = getattr(self.config.training, "checkpoint_path", "")
         self.resume_training = bool(getattr(self.config.training, "resume_training", False))
+        if self.checkpoint_path and "_ft" not in self.save_dir:
+            self.save_dir += "_ft"
         if self.checkpoint_path:
             self.save_dir += "_ckpt"
         if self.multi_gpu:

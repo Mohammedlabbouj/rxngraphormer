@@ -31,7 +31,7 @@
     "decoder_num_layers": 6,
     "add_empty_node": false,
     "att_encoder_type": "attxl",
-    "pretrained_model_path": "./model_path/USPTO_480k",
+    "pretrained_model_path": "",
     "pretrained_model_freeze": false,
     "pretrained_lr_scaled_coef": 0.1
   },

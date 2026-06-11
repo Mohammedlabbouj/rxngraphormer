@@ -1,5 +1,6 @@
 from box import Box
 import argparse
+import os
 import json
 
 from rxngraphormer.train import SequenceTrainer
@@ -46,13 +47,26 @@ def main():
     config_dict.setdefault("training", {})
     config_dict.setdefault("others", {})
 
-    if args.pretrained_model_path:
-        config_dict["model"]["pretrained_model_path"] = args.pretrained_model_path
     if args.save_dir:
         config_dict["model"]["save_dir"] = args.save_dir
     if args.checkpoint_path:
         config_dict["training"]["checkpoint_path"] = args.checkpoint_path
         config_dict["training"]["resume_training"] = args.resume_training
+        config_dict["model"]["pretrained_model_path"] = ""
+    elif args.pretrained_model_path:
+        params_json = os.path.join(args.pretrained_model_path, "parameters.json")
+        ckpt_file = os.path.join(args.pretrained_model_path, "model", "valid_checkpoint.pt")
+        if os.path.isfile(params_json):
+            with open(params_json, "r") as fr:
+                pretrained_params = json.load(fr)
+            if pretrained_params.get("task") == "sequence_generation":
+                config_dict["training"]["checkpoint_path"] = ckpt_file
+                config_dict["training"]["resume_training"] = args.resume_training
+                config_dict["model"]["pretrained_model_path"] = ""
+            else:
+                config_dict["model"]["pretrained_model_path"] = args.pretrained_model_path
+        else:
+            config_dict["model"]["pretrained_model_path"] = args.pretrained_model_path
 
     config = Box(config_dict)
     config.others.local_rank = args.local_rank
