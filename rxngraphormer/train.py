@@ -38,6 +38,13 @@ def _resolve_device(config):
     return configured_device if torch.cuda.is_available() else "cpu", False
 
 
+def _cfg_get(cfg, *names, default=None):
+    for name in names:
+        if hasattr(cfg, name):
+            return getattr(cfg, name)
+    return default
+
+
 class SPLITClassifierTrainer():
     def __init__(self,config):
         self.config = config
@@ -876,22 +883,24 @@ class SequenceTrainer():
                                             output_act_func=pretrained_config.model.output_act_func)
             '''
             
-            input_param = {"emb_dim":pretrained_config.model.emb_dim,
-                        "gnn_type":pretrained_config.model.gnn_type,
-                        "gnn_aggr":pretrained_config.model.gnn_aggr,
-                        "gnum_layer":pretrained_config.model.gnn_num_layer,
-                        "node_readout":pretrained_config.model.node_readout,
-                        "num_heads":pretrained_config.model.num_heads,
-                        "JK":pretrained_config.model.gnn_jk,
-                        "graph_pooling":pretrained_config.model.graph_pooling,
-                        "tnum_layer":pretrained_config.model.trans_num_layer,
-                        "trans_readout":pretrained_config.model.trans_readout,
-                        "onum_layer":pretrained_config.model.output_num_layer,
-                        "drop_ratio":pretrained_config.model.drop_ratio,
-                        "output_size":2,
-                        "split_process":True,
-                        "split_merge_method":pretrained_config.model.split_merge_method,
-                        "output_act_func":pretrained_config.model.output_act_func}
+            input_param = {
+                "emb_dim": pretrained_config.model.emb_dim,
+                "gnn_type": pretrained_config.model.gnn_type,
+                "gnn_aggr": pretrained_config.model.gnn_aggr,
+                "gnum_layer": _cfg_get(pretrained_config.model, "gnn_num_layer", "gnum_layer"),
+                "node_readout": pretrained_config.model.node_readout,
+                "num_heads": pretrained_config.model.num_heads,
+                "JK": _cfg_get(pretrained_config.model, "gnn_jk", "JK"),
+                "graph_pooling": pretrained_config.model.graph_pooling,
+                "tnum_layer": _cfg_get(pretrained_config.model, "trans_num_layer", "tnum_layer"),
+                "trans_readout": pretrained_config.model.trans_readout,
+                "onum_layer": _cfg_get(pretrained_config.model, "output_num_layer", "onum_layer"),
+                "drop_ratio": pretrained_config.model.drop_ratio,
+                "output_size": 2,
+                "split_process": True,
+                "split_merge_method": pretrained_config.model.split_merge_method,
+                "output_act_func": pretrained_config.model.output_act_func,
+            }
             
             rxng = RXNGraphormer("classification",align_config(input_param,"classifier"),"")
             pretrained_model = rxng.get_model()
