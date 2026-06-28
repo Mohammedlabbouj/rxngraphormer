@@ -5,3 +5,120 @@ Evaluation (with teacher) at epoch 5, eval loss: 3.639095566165981, eval acc: 28
 Inferencing....
 Evaluation (without teacher) at epoch 5, eval acc (sequence): 0.0
 
+import os
+import csv
+import gc
+from rxngraphormer.eval import reaction_prediction
+
+
+# -------------------------------
+# Clean SMILES (REMOVE SPACES)
+# -------------------------------
+def clean_smiles(smi):
+    # remove all whitespace: spaces, tabs, etc.
+    return "".join(smi.split())
+
+
+# -------------------------------
+# Read file in chunks
+# -------------------------------
+def read_in_chunks(file_path, chunk_size=64):
+    with open(file_path, 'r') as f:
+        buffer = []
+
+        for line in f:
+            line = line.strip()
+
+            if line:
+                buffer.append(line)
+
+            if len(buffer) == chunk_size:
+                yield buffer
+                buffer = []
+
+        if buffer:
+            yield buffer
+
+
+# -------------------------------
+# Main inference pipeline
+# -------------------------------
+def run_inference(input_file, output_csv, model_path, chunk_size=64):
+    reaction_id = 1
+
+    header = ["Reaction"] + [f"Top-{i}" for i in range(1, 11)]
+
+    with open(output_csv, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(header)
+
+        for chunk in read_in_chunks(input_file, chunk_size):
+
+            print("Processing raw chunk:", chunk)
+
+            # ?? CLEAN THE CHUNK (THIS IS YOUR FIX)
+            clean_chunk = [clean_smiles(smi) for smi in chunk if smi.strip()]
+
+            print("Cleaned chunk:", clean_chunk)
+
+            if not clean_chunk:
+                continue
+
+            # Run model
+            preds = reaction_prediction(
+                model_path,
+                clean_chunk,
+                task_type="forward-synthesis"
+            )
+
+            # preds: DataFrame (rows=Top-k, cols=samples)
+            for col_idx in range(preds.shape[1]):
+                top_preds = preds.iloc[:, col_idx].tolist()
+                top_preds = top_preds[:10]
+
+                row = [f"Reaction_{reaction_id}"] + top_preds
+                writer.writerow(row)
+
+                reaction_id += 1
+
+            # free memory
+            del preds
+            gc.collect()
+
+    print(f"\n? Done. Results saved to: {output_csv}")
+
+
+# -------------------------------
+# MAIN
+# -------------------------------
+def main():
+    model_path = "./model_path/USPTO_31k"
+    input_file = "./dataset/USPTO_31k/src-test.txt"
+    output_file = "./USPTO_31k_test/predictions.csv"
+
+    # sanity checks
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model path not found: {model_path}")
+
+    if not os.path.exists(input_file):
+        raise FileNotFoundError(f"Input file not found: {input_file}")
+
+    print("? Model path:", model_path)
+    print("? Input file:", input_file)
+    print("?? Starting inference...\n")
+
+    run_inference(
+        input_file=input_file,
+        output_csv=output_file,
+        model_path=model_path,
+        chunk_size=2
+    )
+
+
+# -------------------------------
+# ENTRY POINT
+# -------------------------------
+if __name__ == "__main__":
+    main()
+ so this is a code example of things should so i want a new one with    model_path/USPTO_31k_UNMATCHED and test dataset/USPTO_31k_UNMATCHED/src-test.txt and the output  model_path/USPTO_31k_UNMATCHED/Test_evul/
+you with a file called test_prediction or somthing 
