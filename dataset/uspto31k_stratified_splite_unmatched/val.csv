@@ -36,7 +36,7 @@ imine_formation,CC1(C)C2CCC1(CS(=O)(=O)N1CCC3(C=Cc4ccccc43)CC1)C(=O)C2.NO,[H+],C
 Grignard,O=Cc1ccc(Br)nc1.C[CH2][Mg+],O,CCC(O)c1ccc(Br)nc1,test
 SN2_alcohol(thiol),C=C(c1ccccc1O)n1ccnc1.ClCc1ccc(Cl)cc1Cl,[H-].[Na+],C=C(c1ccccc1OCc1ccc(Cl)cc1Cl)n1ccnc1,val
 SNAr_alco(thi)ol(ortho),O=Cc1ccc(Br)cc1F.Cc1c(O)ccc(Cl)c1C,[H-].[Na+],Cc1c(Cl)ccc(Oc2cc(Br)ccc2C=O)c1C,test
-Grignard,O=Cc1ccc(Br)cc1.C[CH](C)[Mg+],O,CC(C)C(O)c1ccc(Br)cc1,test
+Grignard,O=Cc1ccc(Br)cc1.CC(C)[Mg+],O,CC(C)C(O)c1ccc(Br)cc1,test
 DCC_condensation,CC(C)(C)OC(=O)Nc1cccc(C(=O)O)c1.NCCC(=O)OCc1ccccc1,C(=NC1CCCCC1)=NC1CCCCC1,CC(C)(C)OC(=O)Nc1cccc(C(=O)NCCC(=O)OCc2ccccc2)c1,val
 Boc_deprotection,CC(C)(C)OC(=O)N1CCC(c2cc3ccccc3c(=O)[nH]2)CC1CO,[H+],O=c1[nH]c(C2CCNC(CO)C2)cc2ccccc12,val
 base_cat_ester_hydrolysis,COC1=C(OC)C(=O)C(CCCCCC2CCC(OC(C)=O)CC2)=C(C)C1=O,[OH-].[OH-],COC1=C(OC)C(=O)C(CCCCCC2CCC(O)CC2)=C(C)C1=O,test
@@ -623,7 +623,7 @@ Appel,COC(=O)C(C)(C)Cc1ccc(CCO)cc1.BrC(Br)(Br)Br,c1ccc(P(c2ccccc2)c2ccccc2)cc1,C
 reductive_amination,CC(C)OC(=O)c1cccnc1N1CCNCC1.O=Cc1cccc(O)c1,[H+].[BH3-]C#N.[Na+],CC(C)OC(=O)c1cccnc1N1CCN(Cc2cccc(O)c2)CC1,val
 Wittig_ver_2,O=C(C=P(c1ccccc1)(c1ccccc1)c1ccccc1)OCc1ccccc1.COc1ccc2[nH]c(C=O)cc2c1,,COc1ccc2[nH]c(C=CC(=O)OCc3ccccc3)cc2c1,test
 Jones_oxidation,CCCC1(C(O)c2ccc3ccccc3n2)CCN(C(=O)OC(C)(C)C)CC1,O=[Cr](=O)([OH])[OH],CCCC1(C(=O)c2ccc3ccccc3n2)CCN(C(=O)OC(C)(C)C)CC1,test
-Grignard,O=Cc1csc2ccccc12.[Mg+][CH]1CCCCC1,O,OC(c1csc2ccccc12)C1CCCCC1,test
+Grignard,O=Cc1csc2ccccc12.[Mg+]C1CCCCC1,O,OC(c1csc2ccccc12)C1CCCCC1,test
 nucleophilic_attack_to_(thio)carbonyl_or_sulfonyl,Cc1sc(C2CCCN2)cc1C(=O)Nc1ncc(F)s1.O=C(Cl)CCl,,Cc1sc(C2CCCN2C(=O)CCl)cc1C(=O)Nc1ncc(F)s1,val
 (hemi)acetal(aminal)_hydrolysis,CN1CCN(CCOCC(OC2CCCCO2)c2cccc3ccccc23)CC1,O.[H+],CN1CCN(CCOCC(O)c2cccc3ccccc23)CC1,test
 SNAr_alco(thi)ol(para),N#Cc1ccc(F)cc1C(F)(F)F.OCCCN1CCCCC1,[H-].[Na+],N#Cc1ccc(OCCCN2CCCCC2)cc1C(F)(F)F,test
@@ -665,7 +665,7 @@ Cbz_deprotection,O=C(NC1CN(C(=O)NS(=O)(=O)Nc2cc(O)c(O)cc2C(=O)O)C1=O)OCc1ccccc1,
 Mannich,O=[N+](O)c1cccc2cc[nH]c12.CNC.C=O,[H+],CN(C)Cc1c[nH]c2c([N+](=O)O)cccc12,test
 Wittig,C[P+](c1ccccc1)(c1ccccc1)c1ccccc1.O=C1CCC2(CC1)OCCO2,[OH-],C=C1CCC2(CC1)OCCO2,test
 nitrile_reduction,N#Cc1ccc(I)c(O)c1,[Li+].[AlH4-].O.O,NCc1ccc(I)c(O)c1,test
-Grignard,CCOc1ccc2cc(C(=O)c3cn(C(c4ccccc4)(c4ccccc4)c4ccccc4)cn3)ccc2c1.C[CH](C)[Mg+],O,CCOc1ccc2cc(C(O)(c3cn(C(c4ccccc4)(c4ccccc4)c4ccccc4)cn3)C(C)C)ccc2c1,test
+Grignard,CCOc1ccc2cc(C(=O)c3cn(C(c4ccccc4)(c4ccccc4)c4ccccc4)cn3)ccc2c1.CC(C)[Mg+],O,CCOc1ccc2cc(C(O)(c3cn(C(c4ccccc4)(c4ccccc4)c4ccccc4)cn3)C(C)C)ccc2c1,test
 Friedel_Crafts_acylation,O=C(Cl)Cc1cccc(Cl)c1.O=C(c1ccc[nH]1)C(Cl)(Cl)Cl,Cl[Al](Cl)Cl,O=C(Cc1cccc(Cl)c1)c1c[nH]c(C(=O)C(Cl)(Cl)Cl)c1,test
 SN2_alcohol(thiol),CC(O)c1ccc(C2CC3(C)C(CCC3(O)C(F)(F)C(F)(F)F)C3CCC4=CC(=O)CCC4=C23)cc1.Cc1nc2cc(CBr)ccc2s1,[H-].[Na+],Cc1nc2cc(COC(C)c3ccc(C4CC5(C)C(CCC5(O)C(F)(F)C(F)(F)F)C5CCC6=CC(=O)CCC6=C45)cc3)ccc2s1,val
 SN2,Oc1ccc(CCBr)cc1.CN,,CNCCc1ccc(O)cc1,val
@@ -1010,7 +1010,7 @@ nucleophilic_attack_to_iso(thio)cyanate,CCCCCCCCCCCCn1nnnc1N.CC(C)c1cccc(C(C)C)c
 SN2,ClCc1nc(-c2cncnc2)no1.CC(C)N,,CC(C)NCc1nc(-c2cncnc2)no1,val
 Markovnikov_addition,CCOC(=O)C=C(C)C=CCC(C)CCC=C(C)C.O,[H+],CCOC(=O)C=C(C)C=CCC(C)CCCC(C)(C)O,test
 (hemi)acetal(aminal)_hydrolysis,CCCN1C2CCC1CC(N(c1ccc3c(cnn3C3CCCCO3)c1)S(C)(=O)=O)C2,O.[H+],CCCN1C2CCC1CC(N(c1ccc3[nH]ncc3c1)S(C)(=O)=O)C2,test
-Grignard,O=Cc1ccc(OC(F)F)cc1.C[CH](C)[Mg+],O,CC(C)C(O)c1ccc(OC(F)F)cc1,test
+Grignard,O=Cc1ccc(OC(F)F)cc1.CC(C)[Mg+],O,CC(C)C(O)c1ccc(OC(F)F)cc1,test
 nucleophilic_attack_to_iso(thio)cyanate,O=[N+](O)c1ccc(N=C=S)c(Cl)c1.CNN,,CN(N)C(=S)Nc1ccc([N+](=O)O)cc1Cl,val
 nucleophilic_attack_to_(thio)carbonyl_or_sulfonyl,Cc1cn(-c2ccc3c(c2)C(NC(=O)OC(C)(C)C)CC(C)N3)cn1.CC(=O)OC(C)=O,,CC(=O)N1c2ccc(-n3cnc(C)c3)cc2C(NC(=O)OC(C)(C)C)CC1C,val
 amide_reduction,O=C(CCCc1cccs1)N1CCOCC1,[AlH4-].[AlH4-],c1csc(CCCCN2CCOCC2)c1,test
@@ -1040,7 +1040,7 @@ reductive_amination,c1ccc2c(c1)C1CCNCC2C1.C=O,[H+].[BH3-]C#N.[Na+],CN1CCC2CC(C1)
 base_cat_ester_hydrolysis,CC(=O)Oc1ccc(C(=O)Nc2cccc(OCc3cncc4ccccc34)c2)cc1C(C)(C)C,[OH-].[OH-],CC(C)(C)c1cc(C(=O)Nc2cccc(OCc3cncc4ccccc34)c2)ccc1O,test
 Grignard,CCCN(CC1CC1)c1ccc(C(F)(F)F)cc1C=O.[CH3][Mg+],O,CCCN(CC1CC1)c1ccc(C(F)(F)F)cc1C(C)O,test
 nucleophilic_attack_to_(thio)carbonyl_or_sulfonyl,CCOC(=O)CCCCCCC(=O)O.Nc1cc(Cl)ccc1O,,O=C(O)CCCCCCC(=O)Nc1cc(Cl)ccc1O,val
-Grignard,CCOc1nc2c(C(=O)c3ccccn3)cc(-c3c(C)noc3C)cc2[nH]1.CC[CH](C)[Mg+],O,CCOc1nc2c(C(O)(c3ccccn3)C(C)CC)cc(-c3c(C)noc3C)cc2[nH]1,test
+Grignard,CCOc1nc2c(C(=O)c3ccccn3)cc(-c3c(C)noc3C)cc2[nH]1.CCC(C)[Mg+],O,CCOc1nc2c(C(O)(c3ccccn3)C(C)CC)cc(-c3c(C)noc3C)cc2[nH]1,test
 amide_reduction,O=C1COc2ccc(F)cc2N1,[AlH4-].[AlH4-],Fc1ccc2c(c1)NCCO2,test
 carboxylic_acid_derivative_hydrolysis_or_formation,CN(C(=O)c1ccccc1)c1cc(Cl)cc(Cl)c1,O.[H+],CNc1cc(Cl)cc(Cl)c1,test
 O_demethylation,COc1ccc(Oc2ccnc(Nc3nc(C)cs3)c2)cc1,BrB(Br)Br.O,Cc1csc(Nc2cc(Oc3ccc(O)cc3)ccn2)n1,val
@@ -1269,7 +1269,7 @@ SNAr(para),CCOC(=O)c1ccc(F)c(C(=O)N2CCc3ccccc3C2)c1.CCCCN(CCCC)c1n[nH]c(C)c1Cl,,
 reductive_amination,COc1cc2c(cc1[N+](=O)O)CCC(=O)CC2.COCCN,[H+].[BH3-]C#N.[Na+],COCCNC1CCc2cc(OC)c([N+](=O)O)cc2CC1,val
 carbonyl_reduction,O=C(O)CCC(=O)c1ccc(-c2cccc(Cl)c2)cc1,[BH4-].CO,O=C(O)CCC(O)c1ccc(-c2cccc(Cl)c2)cc1,val
 Friedel_Crafts_acylation,Cc1ccc(S(=O)(=O)n2ccc3ccccc32)cc1.CCCCCC(=O)Cl,Cl[Al](Cl)Cl,CCCCCC(=O)c1cn(S(=O)(=O)c2ccc(C)cc2)c2ccccc12,test
-Grignard,CC(=O)c1ccc(C(F)(F)F)cc1.[Mg+][CH]1CC1,O,CC(O)(c1ccc(C(F)(F)F)cc1)C1CC1,test
+Grignard,CC(=O)c1ccc(C(F)(F)F)cc1.[Mg+]C1CC1,O,CC(O)(c1ccc(C(F)(F)F)cc1)C1CC1,test
 DCC_condensation,CC(C)(C)OC(=O)N1CCC(C(=O)O)CC1.CC(C)c1ccc(N)cc1,C(=NC1CCCCC1)=NC1CCCCC1,CC(C)c1ccc(NC(=O)C2CCN(C(=O)OC(C)(C)C)CC2)cc1,val
 SN2,O=C1NC(=O)C2(c3ccc([N+](=O)O)cc3)CC1C2.C=CCBr,,C=CCN1C(=O)C2CC(c3ccc([N+](=O)O)cc3)(C2)C1=O,val
 methyl_ester_synthesis,O=C(c1ccccc1)c1ccc2n1CCCC2C(=O)O.C=[N+]=[N-],,COC(=O)C1CCCn2c(C(=O)c3ccccc3)ccc21,test
@@ -1416,7 +1416,7 @@ acetal_formation_from_enol_ether,OCCCNc1cccc(Br)n1.C1=COCCC1,[H+],Brc1cccc(NCCCO
 (hemi)acetal(aminal)_hydrolysis,CC(C)(C#N)CNC(=O)c1nn(C2CCCCO2)cc1NC(=O)c1ccccn1,O.[H+],CC(C)(C#N)CNC(=O)c1n[nH]cc1NC(=O)c1ccccn1,test
 reductive_amination,CNC1(C(NC(=O)c2cccc(C(F)(F)F)c2Cl)c2ccccc2)CCCC1.O=CC1CC1,[H+].[BH3-]C#N.[Na+],CN(CC1CC1)C1(C(NC(=O)c2cccc(C(F)(F)F)c2Cl)c2ccccc2)CCCC1,val
 Cbz_deprotection,CC(C)(C)OC(=O)N1CCC(NC(=O)OCc2ccccc2)C1,Br,CC(C)(C)OC(=O)N1CCC(N)C1,test
-Grignard,O=Cc1ccc(-c2ccsc2)nc1.[Mg+][CH]1CC1,O,OC(c1ccc(-c2ccsc2)nc1)C1CC1,test
+Grignard,O=Cc1ccc(-c2ccsc2)nc1.[Mg+]C1CC1,O,OC(c1ccc(-c2ccsc2)nc1)C1CC1,test
 reductive_amination,Fc1ccc(CC2CNc3ccccc32)cc1.CCN1CCC(=O)CC1,[H+].[BH3-]C#N.[Na+],CCN1CCC(N2CC(Cc3ccc(F)cc3)c3ccccc32)CC1,val
 SN2_with_tosylate,CC(C)(C)OC(=O)N1CC2CC2(CO)C1c1ccccc1.O=C1NC(=O)c2ccccc21,Cc1ccc(S(=O)(=O)Cl)cc1,CC(C)(C)OC(=O)N1CC2CC2(CN2C(=O)c3ccccc3C2=O)C1c1ccccc1,test
 SN2_alcohol(thiol),Oc1cc(Cl)ccc1-c1nc2ccccc2n1CC1CCCCC1.N#Cc1ccc(CBr)c(F)c1,[H-].[Na+],N#Cc1ccc(COc2cc(Cl)ccc2-c2nc3ccccc3n2CC2CCCCC2)c(F)c1,val
@@ -2166,7 +2166,7 @@ carboxylic_acid_derivative_hydrolysis_or_formation,CC(C)(C)OC(=O)NN(CC1CCCCC1)CC
 DCC_condensation,COc1cccc2c1C(Nc1ccc3cc(N)ccc3n1)CO2.CN1CCN(CC(=O)O)CC1,C(=NC1CCCCC1)=NC1CCCCC1,COc1cccc2c1C(Nc1ccc3cc(NC(=O)CN4CCN(C)CC4)ccc3n1)CO2,val
 Friedel_Crafts_acylation,O=C(Cl)c1ccccc1.Cn1cccc1CC#N,Cl[Al](Cl)Cl,Cn1c(CC#N)ccc1C(=O)c1ccccc1,test
 SN2_with_tosylate,CC(=O)Nc1ccc2nc(CO)ccc2c1.CNC,Cc1ccc(S(=O)(=O)Cl)cc1,CC(=O)Nc1ccc2nc(CN(C)C)ccc2c1,test
-Grignard,O=C(c1ccccc1)c1ccc2c(c1)nnn2-c1ccc(F)cc1.[Mg+][CH]1CC1,O,OC(c1ccccc1)(c1ccc2c(c1)nnn2-c1ccc(F)cc1)C1CC1,test
+Grignard,O=C(c1ccccc1)c1ccc2c(c1)nnn2-c1ccc(F)cc1.[Mg+]C1CC1,O,OC(c1ccccc1)(c1ccc2c(c1)nnn2-c1ccc(F)cc1)C1CC1,test
 Hantzsch_thiazole_synthesis,CCOC(=O)C(=O)CBr.NC(=S)N1CCOCC1,,CCOC(=O)c1csc(N2CCOCC2)n1,test
 Horner_Wadsworth_Emmons,COc1cccc(-c2c(C)cc3cc(OC)ccc3c2Oc2ccc(C=O)cc2)c1.CCOC(=O)CP(=O)(OCC)OCC,[OH-],CCOC(=O)C=Cc1ccc(Oc2c(-c3cccc(OC)c3)c(C)cc3cc(OC)ccc23)cc1,test
 O_demethylation,CCc1c2c(c(OC)c(=O)n1C)C(=O)N(Cc1ccc(F)c(Cl)c1)CC2,BrB(Br)Br.O,CCc1c2c(c(O)c(=O)n1C)C(=O)N(Cc1ccc(F)c(Cl)c1)CC2,val
@@ -2232,7 +2232,7 @@ Cbz_deprotection,O=C(NCCNc1n[nH]c2ccc(-c3ccc(NCC4(c5ncccc5F)CCC4)nn3)cc12)OCc1cc
 Boc_deprotection,COc1c(Cl)ccc2c1C(=O)CC1(CCN(C(=O)OC(C)(C)C)CC1)O2,[H+],COc1c(Cl)ccc2c1C(=O)CC1(CCNCC1)O2,val
 Boc_deprotection,CC(C)(C)OC(=O)N1CCC(CN)(C(=O)Nc2ccccn2)CC1,[H+],NCC1(C(=O)Nc2ccccn2)CCNCC1,val
 Wittig,CCCCCCCCCCC[P+](c1ccccc1)(c1ccccc1)c1ccccc1.O=Cc1cn(C(c2ccccc2)(c2ccccc2)c2ccccc2)cn1,[OH-],CCCCCCCCCCC=Cc1cn(C(c2ccccc2)(c2ccccc2)c2ccccc2)cn1,test
-Grignard,Cc1ncc(CN(C(=O)OC(C)(C)C)c2ccc(C#N)cc2)c(C=O)c1OCc1cccc(C#N)c1.[Mg+][CH]1CC1,O,Cc1ncc(CN(C(=O)OC(C)(C)C)c2ccc(C#N)cc2)c(C(O)C2CC2)c1OCc1cccc(C#N)c1,test
+Grignard,Cc1ncc(CN(C(=O)OC(C)(C)C)c2ccc(C#N)cc2)c(C=O)c1OCc1cccc(C#N)c1.[Mg+]C1CC1,O,Cc1ncc(CN(C(=O)OC(C)(C)C)c2ccc(C#N)cc2)c(C(O)C2CC2)c1OCc1cccc(C#N)c1,test
 aldol_addition,C=CCOC(=O)C(N1C(=O)C(C(CO[SiH](C)C)C(C)(C)C)C1C(C)C(C)=O)=P(c1ccccc1)(c1ccccc1)c1ccccc1.C=CCOC(=O)N1CCCC1C=O,[Na+].[OH-],C=CCOC(=O)C(N1C(=O)C(C(CO[SiH](C)C)C(C)(C)C)C1C(C)C(=O)CC(O)C1CCCN1C(=O)OCC=C)=P(c1ccccc1)(c1ccccc1)c1ccccc1,test
 base_cat_ester_hydrolysis,CC(=O)OCc1c(-c2cc(Nc3ccc(N4CCN(C5COC5)CC4C)cn3)c(=O)n(C)c2)cc(F)cc1-n1ncc2c3c(sc2c1=O)CCCC3,[OH-].[OH-],CC1CN(C2COC2)CCN1c1ccc(Nc2cc(-c3cc(F)cc(-n4ncc5c6c(sc5c4=O)CCCC6)c3CO)cn(C)c2=O)nc1,test
 primary_amide_dehydration,CC1(C)C2Cc3c(n[nH]c3C(N)=O)C21,O=S(Cl)Cl,CC1(C)C2Cc3c(n[nH]c3C#N)C21,test
@@ -3026,7 +3026,7 @@ imine_reduction,Cc1cc(N=Cc2oc3cccc(OCCCN(C)Cc4cccnc4)c3c2C)no1,[BH4-].[H+],Cc1cc
 Hantzsch_thiazole_synthesis,CCOC(=O)C(CC(C)C)C(N)=S.O=C(CBr)c1ccccc1,,CCOC(=O)C(CC(C)C)c1nc(-c2ccccc2)cs1,test
 SN2,Cc1sc2cc(OCCCCBr)ccc2c1-c1ccc(Br)cc1.CCNCC,,CCN(CC)CCCCOc1ccc2c(-c3ccc(Br)cc3)c(C)sc2c1,val
 nucleophilic_attack_to_iso(thio)cyanate,Cn1c(-c2cncc(CN)c2)c(C#N)c2ccc(Cl)cc21.CC(C)N=C=O,,CC(C)NC(=O)NCc1cncc(-c2c(C#N)c3ccc(Cl)cc3n2C)c1,val
-Grignard,CC(=O)CCCC#N.[Mg+][CH]1CCCC1,O,CC(O)(CCCC#N)C1CCCC1,test
+Grignard,CC(=O)CCCC#N.[Mg+]C1CCCC1,O,CC(O)(CCCC#N)C1CCCC1,test
 reductive_amination,NC(=O)c1ccc(Oc2ccc(C=O)cc2F)cn1.CCCCCN,[H+].[BH3-]C#N.[Na+],CCCCCNCc1ccc(Oc2ccc(C(N)=O)nc2)c(F)c1,val
 DCC_condensation,Cc1nc(-c2ccc(Oc3ccc(N)c(CN4CCCC4=O)c3)cn2)no1.O=C(O)c1ccccn1,C(=NC1CCCCC1)=NC1CCCCC1,Cc1nc(-c2ccc(Oc3ccc(NC(=O)c4ccccn4)c(CN4CCCC4=O)c3)cn2)no1,val
 Jones_oxidation,O=S(=O)(c1ccccc1)n1c(C(O)c2ccccc2)cc2ccncc21,O=[Cr](=O)([OH])[OH],O=C(c1ccccc1)c1cc2ccncc2n1S(=O)(=O)c1ccccc1,test

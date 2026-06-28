@@ -18683,7 +18683,7 @@ nucleophilic_attack_to_(thio)carbonyl_or_sulfonyl,CCCCc1nc2c(N)nc3ccccc3c2n1CCCC
 nucleophilic_attack_to_(thio)carbonyl_or_sulfonyl,Cc1[nH]c2c(Cl)ccc(Cl)c2c1CCN.COc1ccc(C(=O)Cl)cc1OC,,COc1ccc(C(=O)NCCc2c(C)[nH]c3c(Cl)ccc(Cl)c23)cc1OC,train
 reductive_amination,CCOC(=O)C1(c2ccc(-c3ccc(-c4onc(C)c4CNCC(C)c4ccccc4)cc3)cc2)CC1.CC=O,[H+].[BH3-]C#N.[Na+],CCOC(=O)C1(c2ccc(-c3ccc(-c4onc(C)c4CN(CC)CC(C)c4ccccc4)cc3)cc2)CC1,train
 SN1,O=C(Nc1n[nH]c2ccc(S(=O)(=O)c3cccc(F)c3)cc12)C(F)(F)F.ClC(c1ccccc1)(c1ccccc1)c1ccccc1,,O=C(Nc1nn(C(c2ccccc2)(c2ccccc2)c2ccccc2)c2ccc(S(=O)(=O)c3cccc(F)c3)cc12)C(F)(F)F,train
-SN2_alcohol(thiol),CCC[CH2][Sn]([CH]=CCBr)([CH2]CCC)[CH2]CCC.CC1(C)OCC(CO)O1,[H-].[Na+],CCC[CH2][Sn]([CH]=CCOCC1COC(C)(C)O1)([CH2]CCC)[CH2]CCC,train
+SN2_alcohol(thiol),CCC[CH2][Sn](C=CCBr)([CH2]CCC)[CH2]CCC.CC1(C)OCC(CO)O1,[H-].[Na+],CCC[CH2][Sn](C=CCOCC1COC(C)(C)O1)([CH2]CCC)[CH2]CCC,train
 DCC_condensation,COC(=O)C1CC(N)C(NC(=O)c2cc3cc(Cl)ccc3[nH]2)C1.CN1CCc2nc(C(=O)O)sc2C1,C(=NC1CCCCC1)=NC1CCCCC1,COC(=O)C1CC(NC(=O)c2cc3cc(Cl)ccc3[nH]2)C(NC(=O)c2nc3c(s2)CN(C)CC3)C1,train
 SN2,CCOCC(=O)Nc1c(C)ccc([N+](=O)O)c1C.COC(=O)C(C)Br,,CCOCC(=O)N(c1c(C)ccc([N+](=O)O)c1C)C(C)C(=O)OC,train
 SN2,N#Cc1ccccc1N1CCC(NCCNC(=O)N2C(=O)OCC2c2ccc(F)c(F)c2)CC1.FC(F)(F)CI,,N#Cc1ccccc1N1CCC(N(CCNC(=O)N2C(=O)OCC2c2ccc(F)c(F)c2)CC(F)(F)F)CC1,train
