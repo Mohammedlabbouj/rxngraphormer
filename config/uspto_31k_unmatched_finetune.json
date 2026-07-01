@@ -48,11 +48,11 @@
     "beta1": 0.9,
     "beta2": 0.998,
     "eps": 1e-9,
-    "learning_rate": 1.0,
+    "learning_rate": 0.5,
     "weight_decay": 0.0
   },
   "scheduler": {
-    "warmup_step": 1500,
+    "warmup_step": 3000,
     "type": "noamlr"
   },
   "training": {
